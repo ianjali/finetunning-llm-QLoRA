@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from pathlib import Path
-import boto3
 import os
 from src.logging import logger
 @dataclass
@@ -24,6 +23,7 @@ class QLoraConfig:
 class ModelConfig:
     model_name:str
     output_dir:Path
+    fine_tune_model:Path
 
 @dataclass
 class SFTTrainerConfig:

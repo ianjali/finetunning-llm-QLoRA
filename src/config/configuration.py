@@ -73,7 +73,7 @@ class ConfigurationManager:
         )
         return training_config
     def get_sft_trainer_config(self)->SFTTrainerConfig:
-        params=self.params.training_params
+        params=self.params.sft_params
         sft_config = SFTTrainerConfig(
             max_seq_length=params.max_seq_length,
             packing=params.packing

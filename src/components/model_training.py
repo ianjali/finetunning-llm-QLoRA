@@ -21,14 +21,14 @@ class ModelTrainer:
         self.train_args=None
         self.device_map = {"": 0}
     def set_config(self,bits_and_bytes_config:BitsBytesConfig,lora_config:QLoraConfig,training_arguments_config:TrainingArgumentsConfig):
-        compute_dtype = getattr(torch, self.bits_and_bytes_config.compute_dtype)
+        compute_dtype = getattr(torch, bits_and_bytes_config.bnb_4bit_compute_dtype)
         self.bnb_config = BitsAndBytesConfig(
-                            load_in_4bit=self.bits_and_bytes_config.use_4bit,
-                            bnb_4bit_quant_type=self.bits_and_bytes_config.bnb_4bit_quant_type,
+                            load_in_4bit=bits_and_bytes_config.use_4bit,
+                            bnb_4bit_quant_type=bits_and_bytes_config.bnb_4bit_quant_type,
                             bnb_4bit_compute_dtype=compute_dtype ,
-                            bnb_4bit_use_double_quant=self.bits_and_bytes_config.use_nested_quant,
+                            bnb_4bit_use_double_quant=bits_and_bytes_config.use_nested_quant,
                         )
-        if compute_dtype == torch.float16 and self.bits_and_bytes_config.use_4bit:
+        if compute_dtype == torch.float16 and bits_and_bytes_config.use_4bit:
             major, _ = torch.cuda.get_device_capability()
         if major >= 8:
             print("=" * 80)
@@ -36,29 +36,29 @@ class ModelTrainer:
             print("=" * 80)
             
         self.peft_config = LoraConfig(
-                lora_alpha=self.lora_config.lora_alpha,
-                lora_dropout=self.lora_config.lora_dropout,
-                r=self.lora_config.lora_r,
+                lora_alpha=lora_config.lora_alpha,
+                lora_dropout=lora_config.lora_dropout,
+                r=lora_config.lora_r,
                 bias="none",
                 task_type="CAUSAL_LM",
             )
         self.train_args = TrainingArguments(
-                output_dir=self.training_arguments_config.output_dir,
-                num_train_epochs=self.training_arguments_config.num_train_epochs,
-                per_device_train_batch_size=self.training_arguments_config.per_device_train_batch_size,
-                gradient_accumulation_steps=self.training_arguments_config.gradient_accumulation_steps,
-                optim=self.training_arguments_config.optim,
-                save_steps=self.training_arguments_config.save_steps,
-                logging_steps=self.training_arguments_config.logging_steps,
-                learning_rate=self.training_arguments_config.learning_rate,
-                weight_decay=self.training_arguments_config.weight_decay,
-                fp16=self.training_arguments_config.fp16,
-                bf16=self.training_arguments_config.bf16,
-                max_grad_norm=self.training_arguments_config.max_grad_norm,
-                max_steps=self.training_arguments_config.max_steps,
-                warmup_ratio=self.training_arguments_config.warmup_ratio,
-                group_by_length=self.training_arguments_config.group_by_length,
-                lr_scheduler_type=self.training_arguments_config.lr_scheduler_type,
+                output_dir=training_arguments_config.output_dir,
+                num_train_epochs=training_arguments_config.num_train_epochs,
+                per_device_train_batch_size=training_arguments_config.per_device_train_batch_size,
+                gradient_accumulation_steps=training_arguments_config.gradient_accumulation_steps,
+                optim=training_arguments_config.optim,
+                save_steps=training_arguments_config.save_steps,
+                logging_steps=training_arguments_config.logging_steps,
+                learning_rate=training_arguments_config.learning_rate,
+                weight_decay=training_arguments_config.weight_decay,
+                fp16=training_arguments_config.fp16,
+                bf16=training_arguments_config.bf16,
+                max_grad_norm=training_arguments_config.max_grad_norm,
+                max_steps=training_arguments_config.max_steps,
+                warmup_ratio=training_arguments_config.warmup_ratio,
+                group_by_length=training_arguments_config.group_by_length,
+                lr_scheduler_type=training_arguments_config.lr_scheduler_type,
                 report_to="tensorboard"
             )
     
