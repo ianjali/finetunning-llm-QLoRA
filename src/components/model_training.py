@@ -20,7 +20,7 @@ class ModelTrainer:
         # self.model_config=None
         self.train_args=None
         self.device_map = {"": 0}
-    def set_config(self,bits_and_bytes_config:BitsBytesConfig,lora_config:QLoraConfig,training_arguments_config:TrainingArgumentsConfig):
+    def set_config(self,bits_and_bytes_config:BitsBytesConfig,lora_config:QLoraConfig,training_arguments_config:TrainingArgumentsConfig,model_config:ModelConfig):
         compute_dtype = getattr(torch, bits_and_bytes_config.bnb_4bit_compute_dtype)
         self.bnb_config = BitsAndBytesConfig(
                             load_in_4bit=bits_and_bytes_config.use_4bit,
@@ -42,15 +42,16 @@ class ModelTrainer:
                 bias="none",
                 task_type="CAUSAL_LM",
             )
+        print(float(training_arguments_config.learning_rate))
         self.train_args = TrainingArguments(
-                output_dir=training_arguments_config.output_dir,
+                output_dir=model_config.output_dir,
                 num_train_epochs=training_arguments_config.num_train_epochs,
                 per_device_train_batch_size=training_arguments_config.per_device_train_batch_size,
                 gradient_accumulation_steps=training_arguments_config.gradient_accumulation_steps,
                 optim=training_arguments_config.optim,
                 save_steps=training_arguments_config.save_steps,
                 logging_steps=training_arguments_config.logging_steps,
-                learning_rate=training_arguments_config.learning_rate,
+                learning_rate=float(training_arguments_config.learning_rate),
                 weight_decay=training_arguments_config.weight_decay,
                 fp16=training_arguments_config.fp16,
                 bf16=training_arguments_config.bf16,
@@ -79,16 +80,16 @@ class ModelTrainer:
         # Set supervised fine-tuning parameters
         trainer = SFTTrainer(
             model=model,
-            train_dataset=model_config,
+            train_dataset=train_df,
             peft_config=self.peft_config,
             dataset_text_field="text",
-            max_seq_length=self.sft.max_seq_length,
+            max_seq_length=sft.max_seq_length,
             tokenizer=tokenizer,
             args=self.train_args,
-            packing=self.sft.packing,
+            packing=sft.packing,
         )
 
         # Train model
-        # trainer.train()
-        # trainer.model.save_pretrained(model_config.fine_tune_model)
+        trainer.train()
+        trainer.model.save_pretrained(model_config.fine_tune_model)
         

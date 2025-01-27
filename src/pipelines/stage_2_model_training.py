@@ -18,9 +18,9 @@ class ModelTrainerPipeline:
         
         
         model_trainer = ModelTrainer()
-        model_trainer.set_config(bits_and_bytes_config=bits_and_bytes_config,lora_config=lora_config,training_arguments_config=training_arguments_config)
-        # base_model,tokenizer = model_trainer.load_base_model_tokenizer(model_config)
-        # model_trainer.finetune_model(sft, model_config,base_model,tokenizer,train_df)
+        model_trainer.set_config(bits_and_bytes_config=bits_and_bytes_config,lora_config=lora_config,training_arguments_config=training_arguments_config,model_config=model_config)
+        base_model,tokenizer = model_trainer.load_base_model_tokenizer(model_config)
+        model_trainer.finetune_model(sft, model_config,base_model,tokenizer,train_df)
         
         
         
