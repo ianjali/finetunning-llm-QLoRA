@@ -1,0 +1,5 @@
+notebooks/
+datasets/
+models/
+venv/
+.env
